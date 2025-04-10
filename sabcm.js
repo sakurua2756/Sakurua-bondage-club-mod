@@ -253,6 +253,47 @@
         }), exports.default = y), y
     }();
 
+    // 辅助睡眠函数（需自行实现或使用第三方库）
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /**
+     * 异步等待条件满足（支持无限等待和取消功能）
+     * @param {function} 检测函数 - 返回 true 时停止等待
+     * @param {object} [配置选项] - 可选参数
+     * @param {function} [配置选项.取消函数] - 返回 true 时中断等待
+     * @param {number} [配置选项.超时时间] - 毫秒数（-1=无限等待，默认 5000ms）
+     * @returns {Promise<boolean>} - true=条件满足，false=被取消/超时
+     */
+    async function 等待(检测函数, {
+        取消函数 = () => false,
+        超时时间 = 5000
+    } = {}) {
+        let 已超时 = false;
+        let 超时计时器 = null;
+    
+        // 只有超时时间 >=0 时才启用超时检测
+        if (超时时间 >= 0) {
+        超时计时器 = setTimeout(() => {
+            已超时 = true;
+            console.error(`[异步等待] 超时！${超时时间}ms 后未满足条件：`, 检测函数.toString());
+        }, 超时时间);
+        }
+    
+        try {
+        while (!检测函数()) {
+            if (取消函数() || 已超时) {
+            return false;
+            }
+            await sleep(10); // 10ms 检查间隔
+        }
+        return true;
+        } finally {
+        超时计时器 && clearTimeout(超时计时器); // 安全清理计时器
+        }
+    }
+
     
     // mod属性
     const mod信息 = {
@@ -267,10 +308,10 @@
     // 注册mod
     if (!window.SABCM_版本) {
         mod = bcModSdk.registerMod({
-            name: MOD_INFO.名称,
-            fullName: MOD_INFO.完整名称,
-            version: MOD_INFO.版本,
-            repository: MOD_INFO.储存库,
+            name: mod信息.名称,
+            fullName: mod信息.完整名称,
+            version: mod信息.版本,
+            repository: mod信息.储存库,
         });
     };
 
@@ -288,23 +329,69 @@
         
     }
 
+    async function 绘制设置界面() {
+        // 等待偏好系统加载
+        await 等待(() => !!PreferenceSubscreenList);
 
-    初始化mod().catch((error) => {
+        // 绘制按钮
+        let hideBackGroundColorPicker = true;
+        let hideTextColorPicker = true;
+        let hideCustomFocusColorPicker = true;
+        PreferenceRegisterExtensionSetting({
+            Identifier: mod信息.名称,
+            ButtonText: "SABCM 设置",
+            Image: "",
+            load: 设置界面初始化,
+            click: 设置界面交互逻辑处理,
+            run: 设置界面元素渲染,
+            exit: 设置界面退出处理,
+        });
+
+        function 设置界面初始化() {
+            
+        }
+
+        function 设置界面交互逻辑处理() {
+            // 退出按钮处理
+            if (MouseIn(1815, 75, 90, 90)) {
+                退出设置界面();
+            }
+        }
+
+        function 设置界面元素渲染() {
+            // 渲染玩家
+            DrawCharacter(Player, 50, 50, 0.9);
+            // 渲染退出按钮
+            DrawButton(1815, 75, 90, 90, "", "White", "Icons/Exit.png"); //Exit Icon
+        }
+
+        function 设置界面退出处理() {
+            
+        }
+
+        function 退出设置界面() {
+            // 关闭mod设置界面并返回扩展界面
+            PreferenceSubscreenExtensionsClear();
+        }
+    }
+
+
+    初始化().catch((error) => {
         console.log(error);
     });
 
     // 在登录时进行初始化，读取mod设置
-    async function 初始化mod() {
-        await waitFor(() => ServerIsConnected && ServerSocket);
-        await waitFor(() => !!!!Player?.AccountName);
+    async function 初始化() {
+        await 等待(() => ServerIsConnected && ServerSocket, {超时时间: -1});
+        await 等待(() => !!!!Player?.AccountName, {超时时间: -1});
         if (!window.SABCM_版本) {
+            绘制设置界面();
             console.log("SABCM " + mod信息.名称 + " 已加载！");
-            Player.SABCM = mod信息.版本;
+            Player.SABCM_版本 = mod信息.版本;
         } else {
             console.log("SABCM " + " 已加载！");
         }
     }
-
 
 
 })();
