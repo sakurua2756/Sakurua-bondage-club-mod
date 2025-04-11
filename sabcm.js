@@ -8,7 +8,8 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=elementfx.com
 // @grant        none
 // ==/UserScript==
-import { 膀胱 } from "./膀胱";
+const DEBUG = true;
+import { 膀胱系统设置,膀胱设置,膀胱类 } from "./膀胱";
 
 (function() {
     'use strict';
@@ -317,20 +318,6 @@ import { 膀胱 } from "./膀胱";
     };
 
 
-    // 默认模组设置数据
-    const 模组默认设置 = {
-        
-    };
-
-    let 模组设置 = {
-        设置:{...模组默认设置}
-    };
-
-    function 默认设置(params) {
-        
-    }
-
-
     async function 绘制设置界面(膀胱设置,) {
         // 等待偏好系统加载
         await 等待(() => !!PreferenceSubscreenList);
@@ -375,6 +362,11 @@ import { 膀胱 } from "./膀胱";
         }
 
         function 退出设置界面() {
+            // 保存设置界面所做修改，调试时不启用
+            if (!DEBUG) {
+                ServerPlayerExtensionSettingsSync("SABCM");
+            }
+
             // 关闭mod设置界面并返回扩展界面
             PreferenceSubscreenExtensionsClear();
         }
@@ -385,13 +377,35 @@ import { 膀胱 } from "./膀胱";
         console.log(error);
     });
 
+    // 默认模组设置数据
+    const 模组默认设置 = {
+    
+    };
+
+    let 模组设置 = {
+        系统设置:{...模组默认设置},
+        膀胱:{...膀胱设置}
+    };
+
+    function 初始化模组设置() {
+        if (!DEBUG) {
+            if (!Player.ExtensionSettings.SABCM) {
+                Player.ExtensionSettings.SABCM = 模组设置;
+            }
+        }
+        else {
+            Player.ExtensionSettings.SABCM = 模组设置;
+        }
+    }
+
     // 在登录时进行初始化，读取mod设置
     async function 初始化() {
         await 等待(() => ServerIsConnected && ServerSocket, {超时时间: -1});
         await 等待(() => !!!!Player?.AccountName, {超时时间: -1});
         if (!window.SABCM_版本) {
-            let 玩家膀胱 = 膀胱 ;
+            初始化模组设置();
 
+            let 玩家膀胱 = new 膀胱类(Player.ExtensionSettings.SABCM.膀胱);
             绘制设置界面(玩家膀胱);
 
             console.log("SABCM " + mod信息.名称 + " 已加载！");

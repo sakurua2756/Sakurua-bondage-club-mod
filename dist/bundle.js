@@ -8,34 +8,35 @@
   };
 
   // 膀胱.js
-  var \u8180\u80F1\u9ED8\u8BA4\u503C, \u8180\u80F1\u8BBE\u7F6E, \u8180\u80F1\u7C7B, \u8180\u80F1;
+  var \u8180\u80F1\u7CFB\u7EDF\u8BBE\u7F6E, \u8180\u80F1\u8BBE\u7F6E, \u8180\u80F1\u7C7B;
   var init__ = __esm({
     "\u8180\u80F1.js"() {
-      \u8180\u80F1\u9ED8\u8BA4\u503C = {
+      \u8180\u80F1\u7CFB\u7EDF\u8BBE\u7F6E = {
         \u8180\u80F1\u6309\u94AE\u6587\u672C: "\u8180\u80F1\u8BBE\u7F6E",
-        \u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u4F4D\u7F6E: [400, 300],
-        \u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u5927\u5C0F: [300, 200]
+        \u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u4F4D\u7F6E: [500, 300],
+        \u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u5927\u5C0F: [200, 80]
       };
       \u8180\u80F1\u8BBE\u7F6E = {
-        \u8BBE\u7F6E: { ...\u8180\u80F1\u9ED8\u8BA4\u503C }
+        \u7CFB\u7EDF\u8BBE\u7F6E: { ...\u8180\u80F1\u7CFB\u7EDF\u8BBE\u7F6E }
       };
       \u8180\u80F1\u7C7B = class {
         constructor(\u8180\u80F1\u8BBE\u7F6E2) {
           this.\u53C2\u6570 = \u8180\u80F1\u8BBE\u7F6E2;
         }
+        \u8BFB\u53D6\u8BBE\u7F6E() {
+        }
         \u6E32\u67D3\u8BBE\u7F6E() {
           DrawButton(
-            this.\u53C2\u6570.\u8BBE\u7F6E.\u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u4F4D\u7F6E[0],
-            this.\u53C2\u6570.\u8BBE\u7F6E.\u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u4F4D\u7F6E[1],
-            this.\u53C2\u6570.\u8BBE\u7F6E.\u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u5927\u5C0F[0],
-            this.\u53C2\u6570.\u8BBE\u7F6E.\u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u5927\u5C0F[1],
-            this.\u53C2\u6570.\u8BBE\u7F6E.\u8180\u80F1\u6309\u94AE\u6587\u672C,
+            this.\u53C2\u6570.\u7CFB\u7EDF\u8BBE\u7F6E.\u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u4F4D\u7F6E[0],
+            this.\u53C2\u6570.\u7CFB\u7EDF\u8BBE\u7F6E.\u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u4F4D\u7F6E[1],
+            this.\u53C2\u6570.\u7CFB\u7EDF\u8BBE\u7F6E.\u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u5927\u5C0F[0],
+            this.\u53C2\u6570.\u7CFB\u7EDF\u8BBE\u7F6E.\u8180\u80F1\u8BBE\u7F6E\u6309\u94AE\u5927\u5C0F[1],
+            this.\u53C2\u6570.\u7CFB\u7EDF\u8BBE\u7F6E.\u8180\u80F1\u6309\u94AE\u6587\u672C,
             "White",
             ""
           );
         }
       };
-      \u8180\u80F1 = new \u8180\u80F1\u7C7B(\u8180\u80F1\u8BBE\u7F6E);
     }
   });
 
@@ -43,6 +44,7 @@
   var require_sabcm = __commonJS({
     "sabcm.js"(exports) {
       init__();
+      var DEBUG = true;
       (function() {
         "use strict";
         var bcModSdk = function() {
@@ -311,12 +313,6 @@ One of mods you are using is using an old version of SDK. It will work for now b
           });
         }
         ;
-        const \u6A21\u7EC4\u9ED8\u8BA4\u8BBE\u7F6E = {};
-        let \u6A21\u7EC4\u8BBE\u7F6E = {
-          \u8BBE\u7F6E: { ...\u6A21\u7EC4\u9ED8\u8BA4\u8BBE\u7F6E }
-        };
-        function \u9ED8\u8BA4\u8BBE\u7F6E(params) {
-        }
         async function \u7ED8\u5236\u8BBE\u7F6E\u754C\u9762(\u8180\u80F1\u8BBE\u7F6E2) {
           await \u7B49\u5F85(() => !!PreferenceSubscreenList);
           PreferenceRegisterExtensionSetting({
@@ -344,17 +340,35 @@ One of mods you are using is using an old version of SDK. It will work for now b
           function \u8BBE\u7F6E\u754C\u9762\u9000\u51FA\u5904\u7406() {
           }
           function \u9000\u51FA\u8BBE\u7F6E\u754C\u9762() {
+            if (!DEBUG) {
+              ServerPlayerExtensionSettingsSync("SABCM");
+            }
             PreferenceSubscreenExtensionsClear();
           }
         }
         \u521D\u59CB\u5316().catch((error) => {
           console.log(error);
         });
+        const \u6A21\u7EC4\u9ED8\u8BA4\u8BBE\u7F6E = {};
+        let \u6A21\u7EC4\u8BBE\u7F6E = {
+          \u7CFB\u7EDF\u8BBE\u7F6E: { ...\u6A21\u7EC4\u9ED8\u8BA4\u8BBE\u7F6E },
+          \u8180\u80F1: { ...\u8180\u80F1\u8BBE\u7F6E }
+        };
+        function \u521D\u59CB\u5316\u6A21\u7EC4\u8BBE\u7F6E() {
+          if (!DEBUG) {
+            if (!Player.ExtensionSettings.SABCM) {
+              Player.ExtensionSettings.SABCM = \u6A21\u7EC4\u8BBE\u7F6E;
+            }
+          } else {
+            Player.ExtensionSettings.SABCM = \u6A21\u7EC4\u8BBE\u7F6E;
+          }
+        }
         async function \u521D\u59CB\u5316() {
           await \u7B49\u5F85(() => ServerIsConnected && ServerSocket, { \u8D85\u65F6\u65F6\u95F4: -1 });
           await \u7B49\u5F85(() => !!!!Player?.AccountName, { \u8D85\u65F6\u65F6\u95F4: -1 });
           if (!window.SABCM_\u7248\u672C) {
-            let \u73A9\u5BB6\u8180\u80F1 = \u8180\u80F1;
+            \u521D\u59CB\u5316\u6A21\u7EC4\u8BBE\u7F6E();
+            let \u73A9\u5BB6\u8180\u80F1 = new \u8180\u80F1\u7C7B(Player.ExtensionSettings.SABCM.\u8180\u80F1);
             \u7ED8\u5236\u8BBE\u7F6E\u754C\u9762(\u73A9\u5BB6\u8180\u80F1);
             console.log("SABCM " + mod\u4FE1\u606F.\u540D\u79F0 + " \u5DF2\u52A0\u8F7D\uFF01");
             Player.SABCM_\u7248\u672C = mod\u4FE1\u606F.\u7248\u672C;
