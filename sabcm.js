@@ -8,6 +8,7 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=elementfx.com
 // @grant        none
 // ==/UserScript==
+import { 膀胱 } from "./膀胱";
 
 (function() {
     'use strict';
@@ -294,7 +295,6 @@
         }
     }
 
-    
     // mod属性
     const mod信息 = {
         名称:"SABCM",
@@ -315,32 +315,6 @@
             repository: mod信息.储存库,
         });
     };
-
-    // 膀胱功能
-    const 膀胱默认值 = {
-        膀胱按钮文本:"膀胱设置",
-        膀胱设置按钮位置:[400,300],
-        膀胱设置按钮大小:[300,200]
-    }; 
-    let 膀胱设置 = {
-        设置:{...膀胱默认值}
-    };
-
-    class 膀胱 {
-        constructor(膀胱设置){
-            this.参数 = 膀胱设置;
-        }
-
-        渲染设置() {
-            // 选择主界面设置子按钮
-            DrawButton(this.参数.设置.膀胱设置按钮位置[0],
-                       this.参数.设置.膀胱设置按钮位置[1], 
-                       this.参数.设置.膀胱设置按钮大小[0],
-                       this.参数.设置.膀胱设置按钮大小[1], this.参数.设置.膀胱按钮文本, 
-                       "White", 
-                       "");
-        }
-    }
 
 
     // 默认模组设置数据
@@ -416,7 +390,7 @@
         await 等待(() => ServerIsConnected && ServerSocket, {超时时间: -1});
         await 等待(() => !!!!Player?.AccountName, {超时时间: -1});
         if (!window.SABCM_版本) {
-            let 玩家膀胱 = new 膀胱(膀胱设置);
+            let 玩家膀胱 = 膀胱 ;
 
             绘制设置界面(玩家膀胱);
 
