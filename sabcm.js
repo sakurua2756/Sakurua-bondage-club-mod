@@ -301,6 +301,7 @@
         完整名称:"Sakurua's Bondage club Mod",
         版本:"0.0.1",
         储存库:"",
+        MOD标题:"Sakurua的bcMOD",
     };
 
 
@@ -315,10 +316,36 @@
         });
     };
 
+    // 膀胱功能
+    const 膀胱默认值 = {
+        膀胱按钮文本:"膀胱设置",
+        膀胱设置按钮位置:[400,300],
+        膀胱设置按钮大小:[300,200]
+    }; 
+    let 膀胱设置 = {
+        设置:{...膀胱默认值}
+    };
+
+    class 膀胱 {
+        constructor(膀胱设置){
+            this.参数 = 膀胱设置;
+        }
+
+        渲染设置() {
+            // 选择主界面设置子按钮
+            DrawButton(this.参数.设置.膀胱设置按钮位置[0],
+                       this.参数.设置.膀胱设置按钮位置[1], 
+                       this.参数.设置.膀胱设置按钮大小[0],
+                       this.参数.设置.膀胱设置按钮大小[1], this.参数.设置.膀胱按钮文本, 
+                       "White", 
+                       "");
+        }
+    }
+
 
     // 默认模组设置数据
     const 模组默认设置 = {
-
+        
     };
 
     let 模组设置 = {
@@ -329,14 +356,12 @@
         
     }
 
-    async function 绘制设置界面() {
+
+    async function 绘制设置界面(膀胱设置,) {
         // 等待偏好系统加载
         await 等待(() => !!PreferenceSubscreenList);
 
         // 绘制按钮
-        let hideBackGroundColorPicker = true;
-        let hideTextColorPicker = true;
-        let hideCustomFocusColorPicker = true;
         PreferenceRegisterExtensionSetting({
             Identifier: mod信息.名称,
             ButtonText: "SABCM 设置",
@@ -362,7 +387,13 @@
             // 渲染玩家
             DrawCharacter(Player, 50, 50, 0.9);
             // 渲染退出按钮
-            DrawButton(1815, 75, 90, 90, "", "White", "Icons/Exit.png"); //Exit Icon
+            DrawButton(1815, 75, 90, 90, "", "White", "Icons/Exit.png");
+            // 渲染标题
+            DrawText(mod信息.MOD标题 + mod信息.版本, 1000, 130, "Black");
+
+            // 渲染膀胱子设置按钮
+            膀胱设置.渲染设置();
+            
         }
 
         function 设置界面退出处理() {
@@ -385,7 +416,10 @@
         await 等待(() => ServerIsConnected && ServerSocket, {超时时间: -1});
         await 等待(() => !!!!Player?.AccountName, {超时时间: -1});
         if (!window.SABCM_版本) {
-            绘制设置界面();
+            let 玩家膀胱 = new 膀胱(膀胱设置);
+
+            绘制设置界面(玩家膀胱);
+
             console.log("SABCM " + mod信息.名称 + " 已加载！");
             Player.SABCM_版本 = mod信息.版本;
         } else {
