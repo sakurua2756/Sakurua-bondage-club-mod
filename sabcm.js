@@ -8,8 +8,9 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=elementfx.com
 // @grant        none
 // ==/UserScript==
-const DEBUG = true;
-import { 膀胱系统设置,膀胱设置,膀胱类 } from "./膀胱";
+window.SABCM = {DEBUG:true};
+import {系统设置ui属性,系统设置,系统设置类} from './系统设置';
+import {膀胱系统ui属性,膀胱设置,膀胱类} from "./膀胱";
 
 (function() {
     'use strict';
@@ -318,9 +319,21 @@ import { 膀胱系统设置,膀胱设置,膀胱类 } from "./膀胱";
     };
 
 
-    async function 绘制设置界面(膀胱设置,) {
+    // 控制帧更新是否同步设置
+    let 同步设置 = true;
+
+
+    // ui数据
+    window.modui数据 = {
+        系统设置:{...系统设置ui属性},
+        膀胱:{...膀胱系统ui属性},
+    };
+
+
+    async function ui管理(ui数据, _系统设置, _膀胱,) {
         // 等待偏好系统加载
         await 等待(() => !!PreferenceSubscreenList);
+        let 当前界面 = "主界面";
 
         // 绘制按钮
         PreferenceRegisterExtensionSetting({
@@ -334,27 +347,109 @@ import { 膀胱系统设置,膀胱设置,膀胱类 } from "./膀胱";
         });
 
         function 设置界面初始化() {
-            
+            同步设置 = false;
+            当前界面 = "主界面";
         }
 
         function 设置界面交互逻辑处理() {
-            // 退出按钮处理
-            if (MouseIn(1815, 75, 90, 90)) {
-                退出设置界面();
+            switch (当前界面) {
+                case "主界面":
+                    // 退出按钮处理
+                    if (MouseIn(1815, 75, 90, 90)) {
+                        退出设置界面();
+                    }
+
+                    // 禁用更新按钮功能
+                    if (MouseIn(1675, 75, 120, 90)) {
+                        if (Player.ExtensionSettings.SABCM.系统设置.模组更新开关) {
+                            Player.ExtensionSettings.SABCM.系统设置.模组更新开关 = false;
+                        }
+                        else {
+                            Player.ExtensionSettings.SABCM.系统设置.模组更新开关 = true;
+                        }
+                    }
+
+                    // 当点击主界面的系统设置时跳转到系统设置子设置界面
+                    if (MouseIn(ui数据.系统设置.主界面设置按钮.设置按钮位置[0],
+                                ui数据.系统设置.主界面设置按钮.设置按钮位置[1], 
+                                ui数据.系统设置.主界面设置按钮.设置按钮大小[0],
+                                ui数据.系统设置.主界面设置按钮.设置按钮大小[1],
+                             )) {
+                        // 设置界面标识符为膀胱子设置界面 
+                        当前界面 = "系统设置子界面";
+                    }
+
+                    // 当点击主界面的膀胱设置按钮时跳转到膀胱子设置界面
+                    if (MouseIn(ui数据.膀胱.主界面设置按钮.设置按钮位置[0],
+                                ui数据.膀胱.主界面设置按钮.设置按钮位置[1], 
+                                ui数据.膀胱.主界面设置按钮.设置按钮大小[0],
+                                ui数据.膀胱.主界面设置按钮.设置按钮大小[1],
+                            )) {
+                        // 设置界面标识符为膀胱子设置界面 
+                        当前界面 = "膀胱设置子界面";
+                    }
+
+                    break;
+
+                case "系统设置子界面":
+                    _系统设置.子界面交互逻辑处理(ui数据);
+
+                    // 退出按钮处理
+                    if (MouseIn(1815, 75, 90, 90)) {
+                        _系统设置.退出子界面()
+                        当前界面 = "主界面";
+                    }
+                    break;
+
+                case "膀胱设置子界面":
+                    _膀胱.子界面交互逻辑处理(ui数据);
+
+                    // 退出按钮处理
+                    if (MouseIn(1815, 75, 90, 90)) {
+                        _膀胱.退出子界面();
+                        当前界面 = "主界面";
+                    }
+
+                    break;
+                default:
+                    break;
             }
         }
 
         function 设置界面元素渲染() {
-            // 渲染玩家
-            DrawCharacter(Player, 50, 50, 0.9);
-            // 渲染退出按钮
-            DrawButton(1815, 75, 90, 90, "", "White", "Icons/Exit.png");
-            // 渲染标题
-            DrawText(mod信息.MOD标题 + mod信息.版本, 1000, 130, "Black");
+            switch (当前界面) {
+                case "主界面":
+                    // 渲染退出按钮
+                    DrawButton(1815, 75, 90, 90, "", "White", "Icons/Exit.png");
 
-            // 渲染膀胱子设置按钮
-            膀胱设置.渲染设置();
-            
+                    // 渲染禁用更新按钮
+                    if (Player.ExtensionSettings.SABCM.系统设置.模组更新开关) {
+                        DrawButton(1675, 75, 120, 90, "禁用模组功能更新", "White","");
+                    }
+                    else {
+                        DrawButton(1675, 75, 120, 90, "启用模组功能更新", "Red","");
+                    }
+
+                    // 渲染标题
+                    DrawText(mod信息.MOD标题 + mod信息.版本, 1000, 130, "Black");
+
+
+                    // 开始渲染每个模块的按钮
+                    _系统设置.渲染主按钮(ui数据); // 系统设置按钮
+                    _膀胱.渲染主按钮(ui数据); // 膀胱设置按钮
+                    break;
+
+                case "系统设置子界面":
+                    _系统设置.绘制子界面(ui数据);
+                    break;
+
+                case "膀胱设置子界面":
+                    _膀胱.绘制子界面(ui数据);
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         function 设置界面退出处理() {
@@ -363,12 +458,13 @@ import { 膀胱系统设置,膀胱设置,膀胱类 } from "./膀胱";
 
         function 退出设置界面() {
             // 保存设置界面所做修改，调试时不启用
-            if (!DEBUG) {
+            if (!window.SABCM.DEBUG) {
                 ServerPlayerExtensionSettingsSync("SABCM");
             }
 
             // 关闭mod设置界面并返回扩展界面
             PreferenceSubscreenExtensionsClear();
+            同步设置 = true;
         }
     }
 
@@ -377,26 +473,77 @@ import { 膀胱系统设置,膀胱设置,膀胱类 } from "./膀胱";
         console.log(error);
     });
 
-    // 默认模组设置数据
-    const 模组默认设置 = {
-    
+    // 整个mod的所有设置变量
+    window.默认模组设置 = {
+        默认设置:{系统设置:{...系统设置},
+                 膀胱:{...膀胱设置},},
+
+        系统设置:{...系统设置},
+        膀胱:{...膀胱设置},
     };
 
-    let 模组设置 = {
-        系统设置:{...模组默认设置},
-        膀胱:{...膀胱设置}
-    };
 
+    // 如果没有mod设置则初始化默认设置
     function 初始化模组设置() {
-        if (!DEBUG) {
+        if (!window.SABCM.DEBUG) {
             if (!Player.ExtensionSettings.SABCM) {
-                Player.ExtensionSettings.SABCM = 模组设置;
+                Player.ExtensionSettings.SABCM = 默认模组设置;
             }
         }
         else {
-            Player.ExtensionSettings.SABCM = 模组设置;
+            Player.ExtensionSettings.SABCM = 默认模组设置;
         }
     }
+
+    
+    function 帧更新(玩家膀胱,) {
+        // 离线更新实现
+        let 上一次更新时间戳 = 0;
+        if (Player.ExtensionSettings.SABCM.系统设置.离线更新状态) {
+            if (Player.ExtensionSettings.SABCM.系统设置.模组上次更新时间 == 0){
+                上一次更新时间戳 = Date.now();
+            } else {
+                上一次更新时间戳 = Player.ExtensionSettings.SABCM.系统设置.模组上次更新时间;
+            }
+        } else {
+            Player.ExtensionSettings.SABCM.系统设置.模组上次更新时间 = 0;
+        }
+
+        // 帧更新实现
+        mod.hookFunction("DrawProcess", 0, (args, next) => {
+            // 当掉线或者关闭模组更新时时禁用更新
+            if (Player.ExtensionSettings.SABCM.系统设置.模组更新开关){
+                if (ServerIsConnected && ServerSocket) {
+                    let 当前时间 = Date.now();
+                    if (当前时间 - 上一次更新时间戳 >= Player.ExtensionSettings.SABCM.系统设置.模组更新频率) {
+                        // 计算每次更新之间实际经过的间隔
+                        let 更新间隔 = 0;
+                        // 离线更新
+                        if (Player.ExtensionSettings.SABCM.系统设置.离线更新状态) {
+                            更新间隔 = 当前时间 - 上一次更新时间戳;
+                            Player.ExtensionSettings.SABCM.系统设置.模组上次更新时间 = 上一次更新时间戳;
+                        } else {
+                            更新间隔 = Player.ExtensionSettings.SABCM.系统设置.模组更新频率;
+                            Player.ExtensionSettings.SABCM.系统设置.模组上次更新时间 = 0;
+                        }
+                        // 更新时间戳来准备下一次更新
+                        上一次更新时间戳 = 当前时间;
+                        // 执行每帧逻辑
+                        玩家膀胱.更新(更新间隔);
+
+                        // 同步变量到服务器
+                        if (!window.SABCM.DEBUG && 同步设置) {
+                            ServerPlayerExtensionSettingsSync("SABCM");
+                        }
+                    }
+                }
+            }
+
+            // 继续原函数
+            return next(args);
+        });
+    }
+
 
     // 在登录时进行初始化，读取mod设置
     async function 初始化() {
@@ -404,9 +551,15 @@ import { 膀胱系统设置,膀胱设置,膀胱类 } from "./膀胱";
         await 等待(() => !!!!Player?.AccountName, {超时时间: -1});
         if (!window.SABCM_版本) {
             初始化模组设置();
-
+            
+            let 玩家系统设置 = new 系统设置类(Player.ExtensionSettings.SABCM.系统设置, 默认模组设置);
             let 玩家膀胱 = new 膀胱类(Player.ExtensionSettings.SABCM.膀胱);
-            绘制设置界面(玩家膀胱);
+
+            // 初始化ui
+            ui管理(modui数据,玩家系统设置,玩家膀胱);
+
+            // 注册帧更新事件
+            帧更新(玩家膀胱);
 
             console.log("SABCM " + mod信息.名称 + " 已加载！");
             Player.SABCM_版本 = mod信息.版本;
