@@ -1,4 +1,4 @@
-(function () {
+6(function () {
     'use strict';
 
     function getDefaultExportFromCjs(x) {

@@ -6,7 +6,7 @@ export class 功能基类 {
         this.文本宽度 = document.getElementById('MainCanvas').getContext('2d').measureText(文本).width;
 
         // debug模式下绘制碰撞框
-        if (window.SABCM.DEBUG) {
+        if (true) {
             DrawRect(
                 (x*0.7) + 偏移量,
                 y-25,
